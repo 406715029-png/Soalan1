@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kata Nama dalam Bahasa Melayu — คำนามในภาษามลายู</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;600;700;900&family=Sarabun:wght@300;400;600;700&family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal-deep:#122F2A; --teal-mid:#1E5449; --teal-soft:#2E6E5E;
+    --gold:#C79A2E; --gold-light:#E9CB7E;
+    --maroon:#7B2B2B; --pink:#D98A8A;
+    --ivory:#FBF3E2; --ivory-warm:#F5E9CE; --ink:#2A2016;
+    --green-ok:#2F6D4F; --red-no:#9C3B3B; --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--ivory); color:var(--ink);
+    font-family:'Sarabun',sans-serif; line-height:1.8; overflow:hidden;
+  }
+  h1,h2,h3,.display{font-family:'Noto Serif Thai',serif;}
+  .kanit{font-family:'Kanit',sans-serif;}
+  button{font-family:inherit;}
+
+  .texture{position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.05;
+    background-image:repeating-linear-gradient(45deg, var(--teal-deep) 0 2px, transparent 2px 26px),
+      repeating-linear-gradient(-45deg, var(--maroon) 0 2px, transparent 2px 26px);}
+
+  /* ---------- PAGE SYSTEM ---------- */
+  .page{
+    position:fixed; inset:0; z-index:1; overflow-y:auto; display:none;
+    padding:0 0 100px;
+  }
+  .page.active{display:block; animation:fadeIn .45s ease;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);}}
+  .inner{max-width:860px; margin:0 auto; padding:64px 24px 20px;}
+
+  .divider{display:flex; align-items:center; gap:14px; margin:16px 0 30px;}
+  .divider .line{flex:1; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+  .divider .diamond{width:11px;height:11px; background:var(--gold); transform:rotate(45deg);}
+
+  /* ---------- COVER (cute) ---------- */
+  #page-cover{
+    background:
+      radial-gradient(circle at 15% 10%, rgba(233,203,126,.30), transparent 42%),
+      radial-gradient(circle at 88% 85%, rgba(217,138,138,.28), transparent 45%),
+      linear-gradient(160deg, var(--teal-deep), #0B1F1B 85%);
+    color:var(--ivory); display:flex; align-items:center; justify-content:center; text-align:center;
+  }
+  .cover-box{max-width:640px; padding:40px 30px;}
+  .cover-flowers{font-size:1.8rem; letter-spacing:18px; margin-bottom:18px; opacity:.9;}
+  .cover-box .eyebrow{letter-spacing:.35em; font-size:.75rem; color:var(--gold-light); text-transform:uppercase; margin-bottom:20px;}
+  .cover-box h1{font-size:clamp(2rem,7vw,3.4rem); margin:0; font-weight:700; color:#fff;}
+  .cover-box h2{font-size:clamp(1.25rem,4vw,1.8rem); margin:12px 0 0; color:var(--gold-light); font-weight:600;}
+  .cover-box .tagline{margin-top:22px; color:var(--ivory-warm); font-size:1.02rem;}
+  .cover-motif{width:96px; margin-bottom:6px;}
+  .start-btn{
+    margin-top:38px; font-family:'Kanit'; font-weight:700; background:var(--gold); color:var(--teal-deep);
+    border:none; padding:15px 38px; border-radius:32px; font-size:1.05rem; cursor:pointer;
+    box-shadow:0 6px 0 #9a7517; transition:transform .15s;
+  }
+  .start-btn:hover{transform:translateY(-3px);}
+  .start-btn:active{transform:translateY(2px); box-shadow:0 3px 0 #9a7517;}
+
+  /* ---------- TOC ---------- */
+  #page-toc .inner{max-width:720px;}
+  .toc-title{text-align:center; color:var(--teal-deep); margin:0;}
+  .toc-hint{text-align:center; color:var(--teal-soft); font-family:'Kanit'; font-size:.95rem; margin-bottom:8px;}
+  .toc-grid{display:flex; flex-direction:column; gap:12px; margin-top:26px;}
+  .toc-btn{
+    display:flex; align-items:center; gap:14px; text-align:left; width:100%;
+    background:#fff; border:1.5px solid #E4D6B0; border-radius:12px; padding:15px 18px;
+    cursor:pointer; transition:all .18s; font-family:'Kanit'; font-size:1rem; color:var(--ink);
+  }
+  .toc-btn:hover{border-color:var(--gold); background:var(--ivory-warm); transform:translateX(4px);}
+  .toc-btn .num{font-family:'Kanit'; color:var(--gold); font-weight:700; font-size:.85rem; min-width:22px;}
+  .toc-btn .chk{
+    width:24px; height:24px; border-radius:6px; border:2px solid var(--teal-mid); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:.85rem; color:transparent; transition:all .2s;
+  }
+  .toc-btn.done .chk{background:var(--green-ok); border-color:var(--green-ok); color:#fff;}
+  .toc-btn .lbl{flex:1;}
+  .toc-btn .arrow{color:var(--gold); font-size:1.1rem;}
+
+  /* ---------- CONTENT PAGES ---------- */
+  .page:not(#page-cover):not(#page-toc){background:var(--ivory);}
+  .eyebrow-sec{font-family:'Kanit'; letter-spacing:.25em; text-transform:uppercase; font-size:.76rem; color:var(--maroon); margin-bottom:8px; font-weight:600;}
+  .section-title{font-size:clamp(1.4rem,4vw,2rem); color:var(--teal-deep); margin:0 0 4px; font-weight:700;}
+  .thai-sub{color:var(--teal-soft); font-family:'Kanit'; font-size:.98rem; margin-bottom:22px;}
+
+  .card{background:#fff; border:1px solid #E4D6B0; border-radius:var(--radius); padding:22px 24px; margin:16px 0; box-shadow:0 3px 0 var(--gold-light);}
+  .card h3{margin-top:0; color:var(--maroon); font-size:1.1rem;}
+  .word-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; margin:12px 0;}
+  .word-chip{background:var(--teal-deep); color:var(--ivory-warm); border-radius:9px; padding:10px 14px; font-family:'Kanit'; font-size:.92rem; display:flex; justify-content:space-between; gap:8px; border-left:4px solid var(--gold);}
+  .word-chip b{color:var(--gold-light);}
+  .example-box{background:var(--ivory-warm); border-left:5px solid var(--maroon); border-radius:0 10px 10px 0; padding:14px 18px; margin:12px 0; font-family:'Kanit';}
+  .example-box .my{font-size:1.05rem; color:var(--teal-deep); font-weight:600;}
+  .example-box .th{color:var(--ink); margin-top:4px;}
+  .mnemonic{margin-top:22px; text-align:center; background:var(--teal-deep); color:var(--gold-light); padding:16px 18px; border-radius:var(--radius); font-family:'Kanit'; font-size:1rem;}
+  .type-cols{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media(max-width:640px){.type-cols{grid-template-columns:1fr;}}
+  .type-col{border-radius:var(--radius); padding:20px; color:#fff;}
+  .type-col.a{background:linear-gradient(160deg,var(--teal-mid),var(--teal-deep));}
+  .type-col.b{background:linear-gradient(160deg,var(--maroon),#4d1b1b);}
+  .type-col h4{margin-top:0; font-family:'Kanit'; letter-spacing:.04em;}
+  .type-col ul{padding-left:20px; margin:8px 0 0;}
+  .summary-card{background:linear-gradient(160deg,var(--teal-deep),#0B1F1B); color:var(--ivory); border-radius:var(--radius); padding:28px;}
+  .summary-card ul{padding-left:22px; line-height:2;}
+  .summary-card b{color:var(--gold-light);}
+
+  /* ---------- QUIZ PAGES ---------- */
+  .quiz-header{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:var(--teal-deep); color:var(--ivory); border-radius:var(--radius) var(--radius) 0 0; padding:14px 20px; font-family:'Kanit';}
+  .score-pill{background:var(--gold); color:var(--teal-deep); font-weight:700; border-radius:20px; padding:6px 16px; font-size:.9rem;}
+  .quiz-wrap{border:2px solid var(--teal-deep); border-radius:0 0 var(--radius) var(--radius); overflow:hidden;}
+  .q-card{padding:18px 22px; border-bottom:1px solid #E6DAB8; background:#fff;}
+  .q-card:last-child{border-bottom:none;}
+  .q-num{display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; background:var(--maroon); color:#fff; border-radius:50%; font-family:'Kanit'; font-size:.82rem; margin-right:9px;}
+  .q-text{font-weight:600; color:var(--ink); font-size:1rem;}
+  .opt-grid{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:12px;}
+  @media(max-width:560px){.opt-grid{grid-template-columns:1fr;}}
+  .opt-btn{font-family:'Sarabun'; font-size:.95rem; text-align:left; padding:10px 13px; border-radius:9px; border:1.5px solid #D8C79A; background:var(--ivory); cursor:pointer; transition:all .15s; color:var(--ink);}
+  .opt-btn:hover:not(:disabled){border-color:var(--teal-mid); background:#fff;}
+  .opt-btn:disabled{cursor:default;}
+  .opt-btn.correct{background:#E4F3EA; border-color:var(--green-ok); color:var(--green-ok); font-weight:700;}
+  .opt-btn.wrong{background:#FBE7E7; border-color:var(--red-no); color:var(--red-no); font-weight:700;}
+  .opt-btn.dim{opacity:.5;}
+  .feedback{margin-top:12px; padding:11px 15px; border-radius:9px; font-family:'Kanit'; font-size:.9rem; display:none; line-height:1.6;}
+  .feedback.show{display:block;}
+  .feedback.ok{background:#E4F3EA; color:var(--green-ok); border-left:4px solid var(--green-ok);}
+  .feedback.no{background:#FBE7E7; color:var(--red-no); border-left:4px solid var(--red-no);}
+  .quiz-footer{display:flex; justify-content:center; padding:18px; background:var(--ivory-warm); border-radius:0 0 var(--radius) var(--radius); margin-top:-1px;}
+  .reset-btn{font-family:'Kanit'; background:var(--gold); color:var(--teal-deep); border:none; font-weight:700; padding:9px 24px; border-radius:24px; cursor:pointer; font-size:.92rem;}
+  .sentence{font-size:1.02rem; color:var(--ink);}
+  .sentence .blank{display:inline-block; min-width:80px; border-bottom:2px solid var(--maroon); text-align:center; font-weight:700; color:var(--maroon);}
+
+  /* ---------- NAV BAR ---------- */
+  .navbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:5;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:rgba(18,47,42,.96); backdrop-filter:blur(6px); color:#fff;
+    padding:12px 20px; font-family:'Kanit'; box-shadow:0 -3px 14px rgba(0,0,0,.25);
+  }
+  .navbar button{
+    background:transparent; border:1.5px solid var(--gold-light); color:var(--ivory);
+    padding:9px 16px; border-radius:22px; cursor:pointer; font-size:.9rem; transition:all .15s;
+  }
+  .navbar button:hover:not(:disabled){background:var(--gold); color:var(--teal-deep);}
+  .navbar button:disabled{opacity:.35; cursor:default;}
+  .navbar .center{display:flex; align-items:center; gap:10px; font-size:.85rem; color:var(--gold-light);}
+  .navbar .home{border-color:var(--pink);}
+  .navbar .home:hover{background:var(--pink); color:#fff;}
+
+  footer.pagefoot{text-align:center; padding:20px 20px 10px; font-family:'Kanit'; color:var(--teal-soft); font-size:.82rem;}
+</style>
+</head>
+<body>
+<div class="texture"></div>
+
+<!-- ============ COVER ============ -->
+<section class="page active" id="page-cover">
+  <div class="cover-box">
+    <svg class="cover-motif" viewBox="0 0 100 100"><g fill="none" stroke="#E9CB7E" stroke-width="2.5"><circle cx="50" cy="50" r="42"/><path d="M50 12 L58 40 L86 40 L63 57 L71 85 L50 68 L29 85 L37 57 L14 40 L42 40 Z"/></g></svg>
+    <div class="cover-flowers">🌸 ✿ 🌸</div>
+    <div class="eyebrow">Bahasa Melayu · บทเรียนคำนาม</div>
+    <h1>KATA NAMA<br>DALAM BAHASA MELAYU</h1>
+    <h2>คำนามในภาษามลายู</h2>
+    <p class="tagline">เรียนรู้คำศัพท์ เข้าใจหลักการ ใช้คำนามได้ถูกต้อง<br><em>“Kenali Kata Nama, kuasai Bahasa Melayu!”</em></p>
+    <button class="start-btn" onclick="showPage('toc')">เริ่มเรียนกันเลย ✨</button>
+  </div>
+</section>
+
+<!-- ============ TOC ============ -->
+<section class="page" id="page-toc">
+  <div class="inner">
+    <h2 class="toc-title display">📖 สารบัญ</h2>
+    <div class="toc-hint">แตะหัวข้อที่ต้องการศึกษาได้เลย</div>
+    <div class="divider"><div class="line"></div><div class="diamond"></div><div class="line"></div></div>
+    <div class="toc-grid" id="tocGrid"></div>
+  </div>
+</section>
+
+<!-- ============ CONTENT 1 ============ -->
+<section class="page" id="page-sec1">
+  <div class="inner">
+    <div class="eyebrow-sec">01 · Pengenalan</div>
+    <h2 class="section-title">ความหมายของคำนาม (Kata Nama)</h2>
+    <div class="thai-sub">ค้นหาว่าคำนามคืออะไร — จุดเริ่มต้นของทุกประโยค</div>
+    <div class="card">
+      <p><b>Kata Nama</b> หมายถึง คำที่ใช้เรียกชื่อคน สัตว์ สิ่งของ สถานที่ หรือสิ่งที่เป็นนามธรรม</p>
+      <div class="word-grid">
+        <div class="word-chip"><span>orang</span><b>คน</b></div>
+        <div class="word-chip"><span>guru</span><b>ครู</b></div>
+        <div class="word-chip"><span>murid</span><b>นักเรียน</b></div>
+        <div class="word-chip"><span>kucing</span><b>แมว</b></div>
+        <div class="word-chip"><span>buku</span><b>หนังสือ</b></div>
+        <div class="word-chip"><span>sekolah</span><b>โรงเรียน</b></div>
+        <div class="word-chip"><span>masjid</span><b>มัสยิด</b></div>
+        <div class="word-chip"><span>kebahagiaan</span><b>ความสุข</b></div>
+      </div>
+    </div>
+    <div class="mnemonic">✦ จำง่าย ๆ: Kata Nama = คำที่ใช้ “เรียกชื่อ” สิ่งต่าง ๆ ✦</div>
+  </div>
+</section>
+
+<!-- ============ CONTENT 2 ============ -->
+<section class="page" id="page-sec2">
+  <div class="inner">
+    <div class="eyebrow-sec">02 · Jenis Kata Nama</div>
+    <h2 class="section-title">ประเภทของคำนาม</h2>
+    <div class="thai-sub">คำนามในภาษามลายูแบ่งออกได้หลายประเภท เริ่มจากสองประเภทหลัก</div>
+    <div class="type-cols">
+      <div class="type-col a">
+        <h4>A. Kata Nama Am — คำนามทั่วไป</h4>
+        <p>ใช้เรียกชื่อบุคคล สัตว์ สิ่งของ หรือสถานที่โดยทั่วไป</p>
+        <ul><li>guru = ครู</li><li>murid = นักเรียน</li><li>sekolah = โรงเรียน</li><li>buku = หนังสือ</li><li>kucing = แมว</li><li>kereta = รถยนต์</li></ul>
+      </div>
+      <div class="type-col b">
+        <h4>B. Kata Nama Khas — คำนามเฉพาะ</h4>
+        <p>ใช้เรียกชื่อเฉพาะของบุคคล สถานที่ องค์กร มักขึ้นต้นด้วยตัวพิมพ์ใหญ่</p>
+        <ul><li>Ahmad = อาหมัด</li><li>Fatimah = ฟาตีมะห์</li><li>Malaysia = ประเทศมาเลเซีย</li><li>Thailand = ประเทศไทย</li><li>Yala = ยะลา</li><li>Universiti Rajabhat Yala</li></ul>
+      </div>
+    </div>
+    <div class="example-box"><div class="my">Guru mengajar murid di dalam kelas.</div><div class="th">ครูกำลังสอนนักเรียนในห้องเรียน</div></div>
+  </div>
+</section>
+
+<!-- ============ CONTENT 3 ============ -->
+<section class="page" id="page-sec3">
+  <div class="inner">
+    <div class="eyebrow-sec">03 · Am vs Khas</div>
+    <h2 class="section-title">คำนามทั่วไปและคำนามเฉพาะ</h2>
+    <div class="thai-sub">ทบทวนความแตกต่างระหว่างสองประเภทหลักของคำนาม</div>
+    <div class="card"><h3>Kata Nama Am</h3><p>เรียกชื่อสิ่งต่าง ๆ แบบกว้าง ๆ ไม่เจาะจง เช่น <i>guru, murid, sekolah, buku, kucing, kereta</i></p></div>
+    <div class="card"><h3>Kata Nama Khas</h3><p>เรียกชื่อเฉพาะเจาะจงหนึ่งเดียว มักขึ้นต้นด้วยตัวอักษรพิมพ์ใหญ่เสมอ เช่น <i>Ahmad, Fatimah, Malaysia, Thailand, Yala</i></p></div>
+  </div>
+</section>
+
+<!-- ============ CONTENT 4 ============ -->
+<section class="page" id="page-sec4">
+  <div class="inner">
+    <div class="eyebrow-sec">04 · Konkret vs Abstrak</div>
+    <h2 class="section-title">คำนามรูปธรรมและนามธรรม</h2>
+    <div class="thai-sub">คำนามยังแบ่งได้ตามการรับรู้ทางประสาทสัมผัส</div>
+    <div class="type-cols">
+      <div class="type-col a">
+        <h4>Kata Nama Konkret — รูปธรรม</h4><p>สิ่งที่มองเห็นหรือสัมผัสได้</p>
+        <ul><li>meja = โต๊ะ</li><li>kerusi = เก้าอี้</li><li>buku = หนังสือ</li><li>rumah = บ้าน</li><li>telefon = โทรศัพท์</li></ul>
+      </div>
+      <div class="type-col b">
+        <h4>Kata Nama Abstrak — นามธรรม</h4><p>สิ่งที่จับต้องไม่ได้ เกี่ยวกับความรู้สึกและความคิด</p>
+        <ul><li>kasih sayang = ความรัก</li><li>kebahagiaan = ความสุข</li><li>keberanian = ความกล้าหาญ</li><li>kecantikan = ความสวยงาม</li><li>kesabaran = ความอดทน</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTENT 5 ============ -->
+<section class="page" id="page-sec5">
+  <div class="inner">
+    <div class="eyebrow-sec">05 · Contoh Ayat</div>
+    <h2 class="section-title">ตัวอย่างการใช้ Kata Nama ในประโยค</h2>
+    <div class="thai-sub">นำคำนามที่เรียนมาไปใช้ในบริบทจริง</div>
+    <div class="example-box"><div class="my">Murid membaca buku.</div><div class="th">Murid = นักเรียน (คำนาม) · buku = หนังสือ (คำนาม)</div></div>
+    <div class="example-box"><div class="my">Fatimah pergi ke sekolah.</div><div class="th">Fatimah = คำนามเฉพาะ · sekolah = คำนามทั่วไป</div></div>
+    <div class="example-box"><div class="my">Kebahagiaan sangat penting dalam kehidupan.</div><div class="th">Kebahagiaan = ความสุข เป็นคำนามนามธรรม</div></div>
+  </div>
+</section>
+
+<!-- ============ QUIZ 1 (10 ข้อในหน้าเดียว) ============ -->
+<section class="page" id="page-quiz1">
+  <div class="inner">
+    <div class="eyebrow-sec">06 · Aktiviti Interaktif</div>
+    <h2 class="section-title">ตอนที่ 1 — กิจกรรมแบบโต้ตอบ 10 ข้อ</h2>
+    <div class="thai-sub">เลือกคำตอบที่ถูกต้อง แล้วดู Feedback ได้ทันที</div>
+    <div class="quiz-header"><span>🎯 แบบทดสอบปรนัย</span><span class="score-pill" id="score1">คะแนน 0/10</span></div>
+    <div class="quiz-wrap" id="quizWrap1"></div>
+    <div class="quiz-footer"><button class="reset-btn kanit" onclick="resetQuiz(1)">↺ ทำใหม่อีกครั้ง</button></div>
+  </div>
+</section>
+
+<!-- ============ QUIZ 2 (10 ข้อในหน้าเดียว) ============ -->
+<section class="page" id="page-quiz2">
+  <div class="inner">
+    <div class="eyebrow-sec">07 · Latihan Mengisi Tempat Kosong</div>
+    <h2 class="section-title">ตอนที่ 2 — แบบฝึกหัดเติมคำ 10 ข้อ</h2>
+    <div class="thai-sub">เลือกคำที่เหมาะสมเติมลงในช่องว่างของประโยค</div>
+    <div class="quiz-header"><span>✏️ เติมคำในประโยค</span><span class="score-pill" id="score2">คะแนน 0/10</span></div>
+    <div class="quiz-wrap" id="quizWrap2"></div>
+    <div class="quiz-footer"><button class="reset-btn kanit" onclick="resetQuiz(2)">↺ ทำใหม่อีกครั้ง</button></div>
+  </div>
+</section>
+
+<!-- ============ SUMMARY ============ -->
+<section class="page" id="page-summary">
+  <div class="inner">
+    <div class="eyebrow-sec">08 · Kesimpulan</div>
+    <h2 class="section-title">สรุปท้ายบทเรียน</h2>
+    <div class="summary-card">
+      <ul>
+        <li><b>Kata Nama Am</b> = คำนามทั่วไป เช่น guru, murid, buku, sekolah</li>
+        <li><b>Kata Nama Khas</b> = คำนามเฉพาะ เช่น Ahmad, Fatimah, Malaysia, Yala</li>
+        <li><b>Kata Nama Abstrak</b> = คำนามนามธรรม เช่น kebahagiaan, keberanian, kasih sayang</li>
+      </ul>
+      <p style="margin-top:16px;">🌾 เทคนิคจำง่าย: <b>คน + สัตว์ + สิ่งของ + สถานที่ + ความคิด/ความรู้สึก = Kata Nama</b></p>
+      <p style="text-align:center; font-style:italic; margin-top:22px; color:#E9CB7E;">“Kenali Kata Nama, kuasai Bahasa Melayu!”</p>
+    </div>
+    <footer class="pagefoot">🎉 จบบทเรียนแล้ว! กลับไปทบทวนหัวข้อไหนก็ได้ที่สารบัญ 🎉</footer>
+  </div>
+</section>
+
+<!-- ============ NAV BAR ============ -->
+<div class="navbar" id="navbar">
+  <button class="home kanit" onclick="showPage('toc')">☰ สารบัญ</button>
+  <button class="kanit" id="prevBtn" onclick="go(-1)">← ก่อนหน้า</button>
+  <span class="center" id="pageIndicator">1 / 10</span>
+  <button class="kanit" id="nextBtn" onclick="go(1)">ถัดไป →</button>
+</div>
+
+<script>
+/* ================= PAGE ORDER ================= */
+const pageOrder = ['cover','toc','sec1','sec2','sec3','sec4','sec5','quiz1','quiz2','summary'];
+const tocItems = [
+  {id:'sec1', label:'ความหมายของคำนาม'},
+  {id:'sec2', label:'ประเภทของคำนาม'},
+  {id:'sec3', label:'คำนามทั่วไปและคำนามเฉพาะ'},
+  {id:'sec4', label:'คำนามรูปธรรมและนามธรรม'},
+  {id:'sec5', label:'ตัวอย่างการใช้คำนามในประโยค'},
+  {id:'quiz1', label:'กิจกรรมแบบโต้ตอบ 10 ข้อ'},
+  {id:'quiz2', label:'แบบฝึกหัดเติมคำ 10 ข้อ'},
+  {id:'summary', label:'สรุปท้ายบทเรียน'},
+];
+let visited = new Set();
+let current = 'cover';
+
+function renderToc(){
+  document.getElementById('tocGrid').innerHTML = tocItems.map((t,i)=>`
+    <button class="toc-btn ${visited.has(t.id)?'done':''}" id="tocbtn-${t.id}" onclick="showPage('${t.id}')">
+      <span class="num">${String(i+1).padStart(2,'0')}</span>
+      <span class="chk">${visited.has(t.id)?'✓':''}</span>
+      <span class="lbl">${t.label}</span>
+      <span class="arrow">›</span>
+    </button>`).join('');
+}
+
+function showPage(id){
+  current = id;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('page-'+id).scrollTop = 0;
+  window.scrollTo(0,0);
+  visited.add(id);
+  renderToc();
+  updateNav();
+}
+
+function updateNav(){
+  const idx = pageOrder.indexOf(current);
+  const navbar = document.getElementById('navbar');
+  navbar.style.display = (current==='cover') ? 'none' : 'flex';
+  document.getElementById('prevBtn').disabled = idx<=0;
+  document.getElementById('nextBtn').disabled = idx>=pageOrder.length-1;
+  document.getElementById('pageIndicator').textContent = `${idx+1} / ${pageOrder.length}`;
+}
+
+function go(delta){
+  const idx = pageOrder.indexOf(current);
+  const next = idx+delta;
+  if(next>=0 && next<pageOrder.length) showPage(pageOrder[next]);
+}
+
+/* ================= QUIZ DATA ================= */
+const quiz1 = [
+ {q:'ข้อใดเป็นคำนาม?', opts:['makan','cantik','buku','berlari'], correct:2,
+  ok:'ถูกต้อง! buku หมายถึง “หนังสือ” เป็นคำนาม เพราะเป็นชื่อของสิ่งของ',
+  no:'ลองสังเกตว่าคำใดเป็นชื่อของคน สัตว์ สิ่งของ หรือสถานที่'},
+ {q:'ข้อใดเป็น Kata Nama Khas?', opts:['guru','sekolah','Ahmad','murid'], correct:2,
+  ok:'ถูกต้อง! Ahmad เป็นชื่อเฉพาะของบุคคล จึงเป็น Kata Nama Khas',
+  no:'Kata Nama Khas ใช้เรียกชื่อเฉพาะของบุคคล สถานที่ หรือสิ่งต่าง ๆ'},
+ {q:'คำว่า “kucing” หมายถึงอะไร?', opts:['สุนัข','แมว','นก','ปลา'], correct:1,
+  ok:'kucing = แมว และเป็น Kata Nama Am',
+  no:'ลองทบทวนคำศัพท์เกี่ยวกับสัตว์'},
+ {q:'คำใดเป็นคำนามเฉพาะ?', opts:['negara','bandar','Thailand','sekolah'], correct:2,
+  ok:'Thailand เป็นชื่อเฉพาะของประเทศ จึงเป็น Kata Nama Khas',
+  no:'คำนามเฉพาะมักเขียนขึ้นต้นด้วยตัวอักษรพิมพ์ใหญ่'},
+ {q:'คำว่า “kebahagiaan” เป็นคำนามประเภทใด?', opts:['Kata Nama Khas','Kata Nama Am','Kata Nama Abstrak','Kata Kerja'], correct:2,
+  ok:'kebahagiaan หมายถึง “ความสุข” เป็นสิ่งที่จับต้องไม่ได้ จึงเป็นคำนามนามธรรม',
+  no:'คำนามนามธรรมใช้เรียกความรู้สึก ความคิด หรือคุณลักษณะที่จับต้องไม่ได้'},
+ {q:'ข้อใดมีคำนาม 2 คำ?', opts:['makan cepat','buku sekolah','sangat cantik','sedang berlari'], correct:1,
+  ok:'buku และ sekolah เป็นคำนามทั้งคู่',
+  no:'มองหาคำที่เป็นชื่อสิ่งของหรือสถานที่'},
+ {q:'ข้อใดเป็น Kata Nama Am?', opts:['Ahmad','Malaysia','Yala','guru'], correct:3,
+  ok:'guru หมายถึง “ครู” โดยทั่วไป จึงเป็น Kata Nama Am',
+  no:'ถ้าเป็นชื่อทั่วไป ไม่ใช่ชื่อเฉพาะ มักเป็น Kata Nama Am'},
+ {q:'“Masjid” หมายถึงอะไร?', opts:['โรงเรียน','มัสยิด','ตลาด','บ้าน'], correct:1,
+  ok:'masjid = มัสยิด และเป็น Kata Nama Am',
+  no:'ลองเชื่อมโยงคำศัพท์กับสถานที่'},
+ {q:'ข้อใดเป็น Kata Nama Abstrak?', opts:['meja','kerusi','keberanian','buku'], correct:2,
+  ok:'keberanian หมายถึง “ความกล้าหาญ” เป็นสิ่งที่จับต้องไม่ได้',
+  no:'คำนามนามธรรมมักเกี่ยวกับความรู้สึก ความคิด หรือคุณลักษณะ'},
+ {q:'ในประโยค “Ali membaca buku.” คำใดเป็นคำนาม?', opts:['membaca','Ali','membaca buku','ถูกทั้ง B และ C'], correct:3,
+  ok:'Ali เป็นคำนามเฉพาะ และ buku เป็นคำนามทั่วไป ส่วน membaca เป็นคำกริยา',
+  no:'แยกคำตามหน้าที่: Ali/buku = คำนาม, membaca = คำกริยา'},
+];
+
+const quiz2 = [
+ {pre:'Ali membaca', post:'di dalam kelas.', opts:['buku','makan','tidur'], correct:0, ok:'เยี่ยมมาก! buku หมายถึงหนังสือ ซึ่งเป็นคำนาม'},
+ {pre:'', post:'mengajar murid.', opts:['Guru','Berlari','Cantik'], correct:0, ok:'ถูกต้อง! guru = ครู เป็น Kata Nama Am'},
+ {pre:'', post:'ialah sebuah negara di Asia Tenggara.', opts:['Malaysia','makan','besar'], correct:0, ok:'เก่งมาก! Malaysia เป็นชื่อเฉพาะของประเทศ จึงเป็น Kata Nama Khas'},
+ {pre:'Saya pergi ke', post:'setiap pagi.', opts:['sekolah','membaca','cantik'], correct:0, ok:'ถูกต้อง! sekolah = โรงเรียน เป็นคำนาม'},
+ {pre:'', post:'sedang tidur di bawah meja.', opts:['Kucing','Berlari','Cepat'], correct:0, ok:'เยี่ยม! kucing = แมว เป็น Kata Nama Am'},
+ {pre:'', post:'pergi ke Yala.', opts:['Fatimah','makan','berjalan'], correct:0, ok:'ถูกต้อง! Fatimah เป็นชื่อเฉพาะของบุคคล'},
+ {pre:'Saya duduk di atas', post:'.', opts:['kerusi','makan','cantik'], correct:0, ok:'เก่งมาก! kerusi = เก้าอี้ เป็นคำนามรูปธรรม'},
+ {pre:'', post:'sangat penting dalam kehidupan.', opts:['Kebahagiaan','Berlari','Membaca'], correct:0, ok:'ถูกต้อง! kebahagiaan = ความสุข เป็นคำนามนามธรรม'},
+ {pre:'Ibu membeli', post:'di pasar.', opts:['ikan','berjalan','cantik'], correct:0, ok:'เยี่ยมมาก! ikan = ปลา เป็นคำนาม'},
+ {pre:'', post:'tinggal di Thailand.', opts:['Ahmad','Tidur','Berlari'], correct:0, ok:'ถูกต้อง! Ahmad เป็นชื่อเฉพาะของบุคคล จึงเป็น Kata Nama Khas'},
+];
+
+let scores = {1:0, 2:0};
+let answered = {1:new Set(), 2:new Set()};
+
+function renderQuiz1(){
+  document.getElementById('quizWrap1').innerHTML = quiz1.map((item,i)=>`
+    <div class="q-card">
+      <div class="q-text"><span class="q-num kanit">${i+1}</span>${item.q}</div>
+      <div class="opt-grid" id="opts1-${i}">
+        ${item.opts.map((o,j)=>`<button class="opt-btn" onclick="answer(1,${i},${j})">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}
+      </div>
+      <div class="feedback" id="fb1-${i}"></div>
+    </div>`).join('');
+}
+function renderQuiz2(){
+  document.getElementById('quizWrap2').innerHTML = quiz2.map((item,i)=>`
+    <div class="q-card">
+      <div class="q-text"><span class="q-num kanit">${i+1}</span>
+        <span class="sentence">${item.pre} <span class="blank">______</span> ${item.post}</span></div>
+      <div class="opt-grid" id="opts2-${i}">
+        ${item.opts.map((o,j)=>`<button class="opt-btn" onclick="answer(2,${i},${j})">${o}</button>`).join('')}
+      </div>
+      <div class="feedback" id="fb2-${i}"></div>
+    </div>`).join('');
+}
+function answer(quizNum, qIndex, choice){
+  const data = quizNum===1 ? quiz1 : quiz2;
+  if(answered[quizNum].has(qIndex)) return;
+  answered[quizNum].add(qIndex);
+  const item = data[qIndex];
+  const btns = document.querySelectorAll(`#opts${quizNum}-${qIndex} .opt-btn`);
+  const fb = document.getElementById(`fb${quizNum}-${qIndex}`);
+  btns.forEach((b,j)=>{
+    b.disabled = true;
+    if(j===item.correct) b.classList.add('correct');
+    else if(j===choice) b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+  if(choice===item.correct){
+    scores[quizNum]++;
+    fb.className = 'feedback ok show';
+    fb.textContent = '✓ ' + item.ok;
+  } else {
+    fb.className = 'feedback no show';
+    fb.textContent = '✗ ' + (item.no || 'ลองใหม่อีกครั้งนะ!') + ` (เฉลย: ${item.opts[item.correct]})`;
+  }
+  document.getElementById(`score${quizNum}`).textContent = `คะแนน ${scores[quizNum]}/10`;
+}
+function resetQuiz(quizNum){
+  scores[quizNum]=0; answered[quizNum]=new Set();
+  document.getElementById(`score${quizNum}`).textContent = `คะแนน 0/10`;
+  if(quizNum===1) renderQuiz1(); else renderQuiz2();
+}
+
+renderToc();
+renderQuiz1();
+renderQuiz2();
+updateNav();
+</script>
+</body>
+</html>
